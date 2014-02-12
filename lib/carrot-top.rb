@@ -8,7 +8,7 @@ class CarrotTop
   attr_reader :rabbitmq_api
 
   def initialize(options={})
-    [:host, :port, :user, :password].each do |option|
+    [:host, :port, :user, :password, :proxy_host, :proxy_port].each do |option|
       if options[option].nil?
         raise ArgumentError, "You must supply a RabbitMQ management API #{option}"
       end
@@ -17,11 +17,13 @@ class CarrotTop
     credentials = "#{options[:user]}:#{options[:password]}"
     location = "#{options[:host]}:#{options[:port]}"
     @rabbitmq_api = "#{protocol}://#{credentials}@#{location}/api"
+    @proxy_host = options[:proxy_host]
+    @proxy_port = options[:proxy_port] || 3128
   end
 
   def query_api(options={})
     raise ArgumentError, "You must supply an API path" if options[:path].nil?
-    fetch_uri(@rabbitmq_api + options[:path])
+    fetch_uri(@rabbitmq_api + options[:path], @proxy_host, @proxy_port)
   end
 
   def method_missing(method, *args, &block)
@@ -35,10 +37,14 @@ class CarrotTop
 
   private
 
-  def fetch_uri(uri, limit=5)
+  def fetch_uri(uri, limit=5, proxy_host, proxy_port)
     raise ArgumentError, "HTTP redirect too deep" if limit == 0
     url = URI.parse(uri)
-    http = Net::HTTP.new(url.host, url.port)
+    if proxy_host
+      http = Net::HTTP::Proxy(proxy_host, proxy_port).new(url.host, url.port)
+    else
+      http = Net::HTTP.new(url.host, url.port)
+    end
     if url.scheme == "https"
       http.use_ssl = true
       http.verify_mode = OpenSSL::SSL::VERIFY_NONE
