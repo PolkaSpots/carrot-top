@@ -8,7 +8,7 @@ class CarrotTop
   attr_reader :rabbitmq_api
 
   def initialize(options={})
-    [:host, :port, :user, :password, :proxy_host, :proxy_port].each do |option|
+    [:host, :port, :user, :password].each do |option|
       if options[option].nil?
         raise ArgumentError, "You must supply a RabbitMQ management API #{option}"
       end
