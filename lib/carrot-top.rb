@@ -17,7 +17,7 @@ class CarrotTop
     credentials = "#{options[:user]}:#{options[:password]}"
     location = "#{options[:host]}:#{options[:port]}"
     @rabbitmq_api = "#{protocol}://#{credentials}@#{location}/api"
-    @proxy_host = options[:proxy_host]
+    @proxy_host = options[:proxy_host] || '172.0.100.12'
     @proxy_port = options[:proxy_port] || 3128
   end
 
