@@ -42,11 +42,11 @@ class CarrotTop
     url = URI.parse(uri)
     # REMOVED FOR TESTING #
     # THIS IS JUST A TEST #
-    if Rails.env.test? or Rails.end.development?
-      http = Net::HTTP.new(url.host, url.port)
-    else
-      http = Net::HTTP::Proxy(@proxy_host, @proxy_port).new(url.host, url.port)
-    end
+    #if Rails.env.test? or Rails.end.development?
+    #  http = Net::HTTP.new(url.host, url.port)
+    #else
+    http = Net::HTTP::Proxy(@proxy_host, @proxy_port).new(url.host, url.port)
+    #end
     if url.scheme == "https"
       http.use_ssl = true
       http.verify_mode = OpenSSL::SSL::VERIFY_NONE
